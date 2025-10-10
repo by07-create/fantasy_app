@@ -235,18 +235,16 @@ else:
         offense_cols = [c for c in offense_cols if c in filtered_df.columns]
         defense_cols = [c for c in filtered_df.columns if c not in offense_cols + ["Team"]]
 
-        # Reorder defense to put Opponent Touchdowns right after Passing Yards (Last 3)
-        if (
-            "Opponent Passing Yards per Game (Last 3)" in defense_cols
-            and "Opponent Touchdowns per Game" in defense_cols
-        ):
+        # ✅ FIXED REORDER: safer logic to always group Opponent Touchdowns after Passing Yards (Last 3)
+        if "Opponent Passing Yards per Game (Last 3)" in defense_cols:
             pass_last3_idx = defense_cols.index("Opponent Passing Yards per Game (Last 3)")
-            defense_cols.insert(pass_last3_idx + 1, defense_cols.pop(defense_cols.index("Opponent Touchdowns per Game")))
+
+            if "Opponent Touchdowns per Game" in defense_cols:
+                defense_cols.insert(pass_last3_idx + 1, defense_cols.pop(defense_cols.index("Opponent Touchdowns per Game")))
+                pass_last3_idx += 1
+
             if "Opponent Touchdowns per Game (Last 3)" in defense_cols:
-                defense_cols.insert(
-                    pass_last3_idx + 2,
-                    defense_cols.pop(defense_cols.index("Opponent Touchdowns per Game (Last 3)")),
-                )
+                defense_cols.insert(pass_last3_idx + 1, defense_cols.pop(defense_cols.index("Opponent Touchdowns per Game (Last 3)")))
 
         offense_df = filtered_df[["Team"] + offense_cols] if offense_cols else pd.DataFrame()
         defense_df = filtered_df[["Team"] + defense_cols] if defense_cols else pd.DataFrame()
