@@ -57,7 +57,7 @@ def scrape_stat_page(url, stat_name):
     try:
         resp = requests.get(url, headers=HEADERS)
         resp.raise_for_status()
-        soup = BeautifulSoup(resp.text, "html.parser")
+        soup = BeautifulSoup(resp.text, "lxml")
         table = soup.find("table")
         if not table:
             return None, f"No table found for {stat_name}"
